@@ -67,23 +67,32 @@ extern "C" int main()
     //adc_init();
     
     auto gpioa = stm32::gpio::port_a::get();
-    gpioa->MODER &= ~(3 << (5 * 2));
-    gpioa->MODER |=  (1 << (5 * 2));
-
+    //gpioa->MODER &= ~(3 << (5 * 2));
+    //gpioa->MODER |=  (1 << (5 * 2));
+    //gpioa->MODER 	 |= (2<<4);   // Bits (5:4)= 1:0 --> Alternate Function for Pin PA2
+    //gpioa->MODER 	 |= (2<<6);   // Bits (7:6)= 1:0 --> Alternate Function for Pin PA3
     //for uart
-    gpioa->MODER &= ~((3U << (2 * 2)) | (3U << (3 * 2)));
-    gpioa->MODER |=  ((2U << (2 * 2)) | (2U << (3 * 2)));
+    //gpioa->MODER &= ~((3U << (2 * 2)) | (3U << (3 * 2)));
+    //gpioa->MODER |=  ((2U << (2 * 2)) | (2U << (3 * 2)));
 
-    gpioa->AFR[0] &= ~((0xFU << (4 * 2)) | (0xFU << (4 * 3)));
-    gpioa->AFR[0] |=  ((1U << (4 * 2)) | (1U << (4 * 3)));
+    //gpioa->PUPDR &= ~(0x000000C0 | 0x00000030);
+    //gpioa->AFR[0] &= ~((0xFU << (4 * 2)) | (0xFU << (4 * 3)));
+    //gpioa->AFR[0] |=  ((6U << (4 * 2)) | (6U << (4 * 3)));
+    gpioa->OSPEEDR = 0x0c000000;
+    gpioa->OTYPER = 0u;
+    gpioa->PUPDR = 0x64000000u;
+    gpioa->MODER = 0xabfff7af;
+    gpioa->AFR[1] = 0;
+    gpioa->AFR[0] |=  ((12U << (8)) | (12U << (12)));;
+    
     //gpio uart end
     stm32::uart::uart_init();
     while (1)
     {
-        utils::set_bit(gpioa->BSRR, 5U);
-        delay(1000000);
+        //utils::set_bit(gpioa->BSRR, 5U);
+        //delay(1000000);
 
-        utils::set_bit(gpioa->BSRR, 5U + 16U);
+        //utils::set_bit(gpioa->BSRR, 5U + 16U);
         delay(1000000);
         stm32::uart::uart_send_string("UART1 initialized with HSI @16MHz\r\n");
     }
