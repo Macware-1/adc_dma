@@ -27,7 +27,8 @@ namespace stm32{
         }//end namespace lpuart
 
         void uart_init();
+        void uart_gpio_init();
         void uart_send_char(char c);
-        void uart_send_string(const char* s);
+        void uart_send_string(const char* s, uint16_t val);
     }//end namespace uart
 }//end namespace stm32
