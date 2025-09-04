@@ -39,7 +39,13 @@ OBJECTS := $(patsubst %.c, build/%.o, $(notdir $(C_SOURCES))) \
            $(patsubst %.cpp, build/%.o, $(notdir $(CPP_SOURCES))) \
            build/$(notdir $(STARTUP_SRC:.c=.o))
 
-all: $(TARGET).bin
+print-size: $(TARGET).elf $(TARGET).bin
+	@echo "==== Size info (text = flash, data + bss = RAM) ===="
+	@arm-none-eabi-size $(TARGET).elf
+	@echo "==== Firmware binary size (bytes) ===="
+	@stat --format="%s" $(TARGET).bin || ls -l $(TARGET).bin
+
+all: $(TARGET).bin print-size
 
 build/%.o: src/%.cpp | build
 	$(CXX) $(HEADER) $(CXXFLAGS) -o $@ $<
@@ -61,3 +67,4 @@ build:
 
 clean:
 	rm -rf build
+
