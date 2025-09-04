@@ -1,0 +1,30 @@
+name: Build ARM Firmware
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🛠 Install ARM GCC toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
+
+      - name: 🧱 Build firmware
+        run: make
+
+      - name: 📦 Upload firmware binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: |
+            build/firmware.elf
+            build/firmware.bin
