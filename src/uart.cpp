@@ -4,9 +4,6 @@
 
 void stm32::uart::uart_gpio_init(){
     auto gpioa = stm32::gpio::port_a::get();
-    //gpioa->OSPEEDR = 0x0c000000; //reset value
-    //gpioa->OTYPER = 0U;  //reset value
-    //gpioa->PUPDR = 0x64000000u; //reset value
     utils::write_reg(gpioa->MODER, 2UL, 4U, 2U);  //afmode ->PA2
     utils::write_reg(gpioa->MODER, 2UL, 6U, 2U);  //afmode ->PA3
 
@@ -25,8 +22,6 @@ void stm32::uart::uart_init(){
     utils::set_bit(uart->CR1, 3U); //enable TE
     utils::set_bit(uart->CR1, 2U); //enable RE
     utils::set_bit(uart->CR1, 0U); //enable uart
-    // Set word length = 8 bits, no parity, oversampling by 16
-    //uart->CR1 |= (1 << 3) | (1 << 2) | (1 << 0); // TE, RE, UE
     while(!utils::is_bit_set(uart->ISR, 21U));
     while(!utils::is_bit_set(uart->ISR, 22U));
 }

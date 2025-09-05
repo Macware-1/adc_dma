@@ -52,6 +52,8 @@ namespace stm32{
             return reinterpret_cast<adc_struct*>(adc1_base);
         }
 
+        void adc_gpio_init();
+        void adc_init();
         void start_adc();
         uint16_t get_adc_val();
 
