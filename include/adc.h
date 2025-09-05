@@ -53,5 +53,6 @@ namespace stm32{
         }
 
         void start_adc();
+        uint16_t get_adc_val();
     }//end namespace ADC
 }//end namespace stm32
