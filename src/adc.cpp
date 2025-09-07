@@ -21,6 +21,14 @@ void stm32::ADC::adc_init(){
     
     while(utils::is_bit_set(adc1->CR, 31U)); //wait for calibration
 
+    utils::set_bit(adc1->CFGR, 0U); //enable adc dma
+    utils::set_bit(adc1->CFGR, 1U); //enable circular mode
+
+    auto adc12 = stm32::ADC::get_adc_common();
+    //utils::set_bit(adc12->CCR, 13U);
+    //utils::set_bit(adc12->CCR, 15U);
+    adc12->CCR = 0x20000U;
+
     utils::set_bit(adc1->ISR, 0U); //clear ADRDY
     utils::set_bit(adc1->CR, 0U); //set adc ready
     //while(!(utils::is_bit_set(adc1->ISR, 0U))); //wait till ADC ready
@@ -28,7 +36,7 @@ void stm32::ADC::adc_init(){
 
     utils::write_reg(adc1->CFGR, 0UL, 3U, 2U); //12 bit resolution
     utils::clear_bit(adc1->CFGR,15U);          //right allign
-    utils::clear_bit(adc1->CFGR,13U);          //continuous conversion
+    utils::set_bit(adc1->CFGR,13U);          //continuous conversion
     utils::set_bit(adc1->CFGR,31U);          //continuous conversion
 
     adc1->CFGR2 = 0u;

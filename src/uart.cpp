@@ -66,9 +66,9 @@ void stm32::uart::uart_send_string(const char* s, uint16_t val) {
     }
 
     char adc_val[6];
-    uint16_to_char_array(val,adc_val);
+    uint16_to_char_array(val, adc_val);
 
-    for(uint8_t i=0; i<4; i++){
+    for (uint8_t i = 0; adc_val[i] != '\0'; i++) {
         stm32::uart::uart_send_char(adc_val[i]);
     }
 

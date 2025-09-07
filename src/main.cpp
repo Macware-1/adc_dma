@@ -4,6 +4,9 @@
 #include "utils.h"
 #include "adc.h"
 #include "uart.h"
+#include "dma.h"
+
+volatile uint16_t buffer[2]={0U};
 
 void delay(int time){
     for (volatile int i = 0; i < time; ++i){
@@ -24,10 +27,14 @@ void set_internal_clock(){
 
 void enable_peripheral_clocks(){
     stm32::rcc::get()->AHB2ENR |= (1 << 0);     //enable gpioa clock
+
     auto rcc = stm32::rcc::get();         
     rcc->CCIPR = 0x20000000U;          
     utils::set_bit(rcc->AHB2ENR, 13U);          //enable ADC clock
     utils::set_bit(rcc->APB1ENR2, 0U);          //enable lpuart1 clock
+ 
+    rcc->AHB1ENR |= (1UL<<2U);                  //enable adc12
+    utils::set_bit(rcc->AHB1ENR, 0U);           //enable dma1
     
 }
 
@@ -37,17 +44,23 @@ extern "C" int main()
     enable_peripheral_clocks();
     stm32::uart::uart_gpio_init();
     stm32::uart::uart_init();
+    stm32::dma_channel::init_dma_channel();
     stm32::ADC::adc_gpio_init();
     stm32::ADC::adc_init();
+    stm32::ADC::start_adc();
     while (1)
     {
-        //utils::set_bit(gpioa->BSRR, 5U);
-        //delay(1000000);
-        //utils::set_bit(gpioa->BSRR, 5U + 16U);
-        stm32::ADC::start_adc();
-        uint16_t val = stm32::ADC::get_adc_val();
+#if defined LED_BLINK
+        utils::set_bit(gpioa->BSRR, 5U);
         delay(1000000);
-        stm32::uart::uart_send_string("ADC val:", val);
+        utils::set_bit(gpioa->BSRR, 5U + 16U);
+#endif
+        
+        delay(1000000);
+        //uint16_t val = stm32::ADC::get_adc_val();
+        //stm32::uart::uart_send_string("val:", val);
+        stm32::uart::uart_send_string("buffer 0:", buffer[0]);
+        stm32::uart::uart_send_string("buffer 1:", buffer[1]);
     }
 
     return 0;
