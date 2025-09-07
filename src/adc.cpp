@@ -55,23 +55,23 @@ void stm32::ADC::adc_init(){
     utils::set_bit(adc1->CFGR,31U);          //continuous conversion
 
     adc1->CFGR2 = 0u;
-    utils::write_reg(adc1->SMPR1, 2UL, 3U, 3U); //12.5 cycles for PA0,PA1
-    utils::write_reg(adc1->SMPR1, 2UL, 6U, 3U); //pa1
+    utils::write_reg(adc1->SMPR1, 7UL, 3U, 3U); //640.5 cycles to avoid crosstalk 
+    utils::write_reg(adc1->SMPR1, 7UL, 6U, 3U); //pa1
 
     //utils::write_reg(adc1->SMPR1, 2UL, 18U, 3U); //channel 6
-    utils::write_reg(adc1->SMPR1, 2UL, 21U, 3U); //channel 7
-    utils::write_reg(adc1->SMPR1, 2UL, 24U, 3U); //channel 8
-    utils::write_reg(adc1->SMPR1, 2UL, 27U, 3U); //channel 9
+    utils::write_reg(adc1->SMPR1, 7UL, 21U, 3U); //channel 7
+    utils::write_reg(adc1->SMPR1, 7UL, 24U, 3U); //channel 8
+    utils::write_reg(adc1->SMPR1, 7UL, 27U, 3U); //channel 9
 
     utils::write_reg(adc1->SQR1, 4UL, 0U, 4U); //5 conversions
 
     utils::set_bit(adc1->SQR1, 6U); //regular conversion
     utils::set_bit(adc1->SQR1, 13U); //regular conversion
     //utils::write_reg(adc1->SQR1, 6UL, 18U, 5U); //4 conversions
-    utils::write_reg(adc1->SQR1, 7UL, 24U, 5U); //4 conversions
+    utils::write_reg(adc1->SQR1, 7UL, 24U, 5U); //5 conversions
 
-    utils::write_reg(adc1->SQR2, 8UL, 0U, 5U); //4 conversions
-    utils::write_reg(adc1->SQR2, 9UL, 6U, 5U); //4 conversions
+    utils::write_reg(adc1->SQR2, 8UL, 0U, 5U); //5 conversions
+    utils::write_reg(adc1->SQR2, 9UL, 6U, 5U); //5 conversions
 }
 
 void stm32::ADC::start_adc(){

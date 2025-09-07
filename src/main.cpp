@@ -27,7 +27,7 @@ void set_internal_clock(){
 
 void enable_peripheral_clocks(){
     stm32::rcc::get()->AHB2ENR |= (1 << 0);     //enable gpioa clock
-    stm32::rcc::get()->AHB2ENR |= (1 << 0);     //enable gpioa clock
+    stm32::rcc::get()->AHB2ENR |= (1 << 2);     //enable gpioc clock
 
     auto rcc = stm32::rcc::get();         
     rcc->CCIPR = 0x20000000U;          
