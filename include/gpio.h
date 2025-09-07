@@ -23,6 +23,14 @@ namespace stm32{
                 return reinterpret_cast<gpio_struct*>(gpioa_base);
             }
         }//end namespace port_a
+        
+        namespace port_c{
+            constexpr uint32_t gpioc_base = (AHB2PERIPH_BASE + 0x0800UL); 
+
+            inline gpio_struct* get(){
+                return reinterpret_cast<gpio_struct*>(gpioc_base);
+            }
+        }//end namespace port_c
     }//end namespace gpio
 }//end namespace stm32
 

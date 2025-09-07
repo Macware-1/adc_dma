@@ -6,7 +6,7 @@
 #include "uart.h"
 #include "dma.h"
 
-volatile uint16_t buffer[2]={0U};
+volatile uint16_t buffer[5]={0U};
 
 void delay(int time){
     for (volatile int i = 0; i < time; ++i){
@@ -26,6 +26,7 @@ void set_internal_clock(){
 }
 
 void enable_peripheral_clocks(){
+    stm32::rcc::get()->AHB2ENR |= (1 << 0);     //enable gpioa clock
     stm32::rcc::get()->AHB2ENR |= (1 << 0);     //enable gpioa clock
 
     auto rcc = stm32::rcc::get();         
@@ -48,19 +49,30 @@ extern "C" int main()
     stm32::ADC::adc_gpio_init();
     stm32::ADC::adc_init();
     stm32::ADC::start_adc();
+
+#if defined LED_BLINK
+    auto gpioa = stm32::gpio::port_a::get();
+    gpioa->MODER &= ~(3 << (5 * 2));
+    gpioa->MODER |=  (1 << (5 * 2));
+#endif
+
     while (1)
     {
 #if defined LED_BLINK
         utils::set_bit(gpioa->BSRR, 5U);
         delay(1000000);
         utils::set_bit(gpioa->BSRR, 5U + 16U);
-#endif
-        
+        delay(1000000);
+#else
         delay(1000000);
         //uint16_t val = stm32::ADC::get_adc_val();
         //stm32::uart::uart_send_string("val:", val);
-        stm32::uart::uart_send_string("buffer 0:", buffer[0]);
-        stm32::uart::uart_send_string("buffer 1:", buffer[1]);
+        stm32::uart::uart_send_string("Channel 1 buffer:", buffer[0]);
+        stm32::uart::uart_send_string("Channel 2 buffer:", buffer[1]);
+        stm32::uart::uart_send_string("Channel 3 buffer:", buffer[3]);
+        stm32::uart::uart_send_string("Channel 4 buffer:", buffer[4]);
+        stm32::uart::uart_send_string("Channel 5 buffer:", buffer[5]);
+#endif
     }
 
     return 0;
