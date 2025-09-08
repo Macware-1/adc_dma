@@ -4,6 +4,9 @@
 #include "utils.h"
 #include "adc.h"
 #include "uart.h"
+#include "dma.h"
+
+volatile uint16_t buffer[stm32::ADC::NO_OF_ADC_CONVERSIONS]={0U};
 
 void delay(int time){
     for (volatile int i = 0; i < time; ++i){
@@ -24,40 +27,18 @@ void set_internal_clock(){
 
 void enable_peripheral_clocks(){
     stm32::rcc::get()->AHB2ENR |= (1 << 0);     //enable gpioa clock
-    auto rcc = stm32::rcc::get();                   
+    stm32::rcc::get()->AHB2ENR |= (1 << 1);     //enable gpiob clock
+    stm32::rcc::get()->AHB2ENR |= (1 << 2);     //enable gpioc clock
+    stm32::rcc::get()->AHB2ENR |= (1 << 5);     //enable gpiof clock
+
+    auto rcc = stm32::rcc::get();         
+    rcc->CCIPR = 0x20000000U;          
     utils::set_bit(rcc->AHB2ENR, 13U);          //enable ADC clock
     utils::set_bit(rcc->APB1ENR2, 0U);          //enable lpuart1 clock
-}
-
-void adc_init(){
-    auto gpioa = stm32::gpio::port_a::get();
-    utils::set_reg(gpioa->MODER, 3UL, 0U);   //enable PA0 analog
-    utils::set_reg(gpioa->MODER, 3UL, 2U);   //enable PA1 analog
-    utils::clear_reg(gpioa->PUPDR, 3UL, 0U); //no push pull
-    utils::clear_reg(gpioa->PUPDR, 3UL, 2U); //no push pull
-
-    auto adc1 = stm32::ADC::get();
-    utils::clear_bit(adc1->CR, 29U); //exit deep powerdown mode
-    utils::set_bit(adc1->CR, 28U);   //enable voltage regulator
-    delay(1000000); //1 second
-
-    utils::set_bit(adc1->CR, 31U);           //start adc calibration
-    while(utils::is_bit_set(adc1->CR, 31U)); //wait for calibration
-
-    utils::set_bit(adc1->ISR, 0U); //clear ADRDY
-    utils::set_bit(adc1->CR, 0U); //set adc ready
-    while(!(utils::is_bit_set(adc1->ISR, 0U))); //wait till ADC ready
-
-    utils::write_reg(adc1->CFGR, 0UL, 3U, 2U); //12 bit resolution
-    utils::clear_bit(adc1->CFGR,15U);          //right allign
-    utils::clear_bit(adc1->CFGR,13U);          //continuous conversion
-
-    utils::write_reg(adc1->SMPR1, 2UL, 15U, 3U); //12.5 cycles for PA0,PA1
-    utils::write_reg(adc1->SMPR1, 2UL, 18U, 3U);
-
-    utils::set_bit(adc1->SQR1, 0U); //regular conversion
-    utils::write_reg(adc1->SQR1, 5UL, 6U, 5U);  //1st conversion channel 5
-    utils::write_reg(adc1->SQR1, 6UL, 12U, 5U); //2nd conversion channel 6
+ 
+    rcc->AHB1ENR |= (1UL<<2U);                  //enable adc12
+    utils::set_bit(rcc->AHB1ENR, 0U);           //enable dma1
+    
 }
 
 extern "C" int main()
@@ -66,16 +47,34 @@ extern "C" int main()
     enable_peripheral_clocks();
     stm32::uart::uart_gpio_init();
     stm32::uart::uart_init();
-    adc_init();
+    stm32::dma_channel::init_dma_channel();
+    stm32::ADC::adc_gpio_init();
+    stm32::ADC::adc_init();
+    stm32::ADC::start_adc();
+
+#if defined LED_BLINK
+    auto gpioa = stm32::gpio::port_a::get();
+    gpioa->MODER &= ~(3 << (5 * 2));
+    gpioa->MODER |=  (1 << (5 * 2));
+#endif
+
     while (1)
     {
-        //utils::set_bit(gpioa->BSRR, 5U);
-        //delay(1000000);
-        //utils::set_bit(gpioa->BSRR, 5U + 16U);
-        stm32::ADC::start_adc();
-        uint16_t val = stm32::ADC::get_adc_val();
+#if defined LED_BLINK
+        utils::set_bit(gpioa->BSRR, 5U);
         delay(1000000);
-        stm32::uart::uart_send_string("ADC val:", val);
+        utils::set_bit(gpioa->BSRR, 5U + 16U);
+        delay(1000000);
+#else
+        delay(1000000);
+        //uint16_t val = stm32::ADC::get_adc_val();
+        //stm32::uart::uart_send_string("val:", val);
+        stm32::uart::uart_send_string("A0 buffer:", buffer[0]); //A0
+        stm32::uart::uart_send_string("A1 buffer:", buffer[1]); //A1
+        stm32::uart::uart_send_string("A4 buffer:", buffer[2]); //A4
+        stm32::uart::uart_send_string("A5 buffer:", buffer[3]); //A5
+        stm32::uart::uart_send_string("Pin 35", buffer[4]); //pin 35
+#endif
     }
 
     return 0;

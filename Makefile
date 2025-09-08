@@ -22,6 +22,9 @@ else
     $(error Unknown BUILD type $(BUILD))
 endif
 
+APPLICATION_FLAG = -DNLED_BLINK
+CFLAGS += $(APPLICATION_FLAG)
+
 CXXFLAGS = -c $(CFLAGS) -mcpu=cortex-m4 -mthumb -std=c++11 -fno-exceptions -fno-rtti
 CFLAGS_C = -c $(CFLAGS) -mcpu=cortex-m4 -mthumb
 LDFLAGS  = -nostartfiles -T linker.ld

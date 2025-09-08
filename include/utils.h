@@ -25,6 +25,6 @@ namespace utils{
     }
 
     inline bool is_bit_set(volatile uint32_t &reg, uint32_t pos){
-        return ((reg & (0x1UL << pos)) != 0U);
+        return ((reg & (0x1UL << pos)) == (0x1UL << pos));
     }
 }
