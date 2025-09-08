@@ -2,6 +2,7 @@
 
 namespace stm32{
     namespace ADC{
+        constexpr uint8_t NO_OF_ADC_CONVERSIONS = 5U;
         typedef struct
         {
             volatile uint32_t ISR;          /*!< ADC interrupt and status register,             Address offset: 0x00 */

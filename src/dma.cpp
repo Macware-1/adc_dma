@@ -2,12 +2,11 @@
 #include "utils.h"
 #include "adc.h"
 
-extern volatile uint16_t buffer[5];
+extern volatile uint16_t buffer[stm32::ADC::NO_OF_ADC_CONVERSIONS];
 
 void stm32::dma_channel::init_dma_channel(){
     auto dma1_channel = stm32::dma_channel::get();
     utils::clear_bit(dma1_channel->CCR, 0U);         //diable dma
-    //utils::clear_bit(dma1_channel->CCR, 4U);
 
     auto adc = stm32::ADC::get();
     dma1_channel->CPAR = reinterpret_cast<uint32_t>(&adc->DR); //set data register of ADC

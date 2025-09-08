@@ -76,8 +76,8 @@ void stm32::uart::uart_send_string(const char* s, uint16_t val) {
     stm32::uart::uart_send_char('\n');
 }
 
-void stm32::uart::uart_send_string(const char* s) {
-    while (*s) {
-        stm32::uart::uart_send_char(*s++);
+void stm32::uart::uart_send_string(const char* str) {
+    while (*str) {
+        stm32::uart::uart_send_char(*str++);
     }
 }

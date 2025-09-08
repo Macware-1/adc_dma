@@ -6,7 +6,7 @@
 #include "uart.h"
 #include "dma.h"
 
-volatile uint16_t buffer[5]={0U};
+volatile uint16_t buffer[stm32::ADC::NO_OF_ADC_CONVERSIONS]={0U};
 
 void delay(int time){
     for (volatile int i = 0; i < time; ++i){
@@ -27,7 +27,9 @@ void set_internal_clock(){
 
 void enable_peripheral_clocks(){
     stm32::rcc::get()->AHB2ENR |= (1 << 0);     //enable gpioa clock
+    stm32::rcc::get()->AHB2ENR |= (1 << 1);     //enable gpiob clock
     stm32::rcc::get()->AHB2ENR |= (1 << 2);     //enable gpioc clock
+    stm32::rcc::get()->AHB2ENR |= (1 << 5);     //enable gpiof clock
 
     auto rcc = stm32::rcc::get();         
     rcc->CCIPR = 0x20000000U;          
@@ -67,11 +69,11 @@ extern "C" int main()
         delay(1000000);
         //uint16_t val = stm32::ADC::get_adc_val();
         //stm32::uart::uart_send_string("val:", val);
-        stm32::uart::uart_send_string("Channel 1 buffer:", buffer[0]);
-        stm32::uart::uart_send_string("Channel 2 buffer:", buffer[1]);
-        stm32::uart::uart_send_string("Channel 3 buffer:", buffer[3]);
-        stm32::uart::uart_send_string("Channel 4 buffer:", buffer[4]);
-        stm32::uart::uart_send_string("Channel 5 buffer:", buffer[5]);
+        stm32::uart::uart_send_string("A0 buffer:", buffer[0]); //A0
+        stm32::uart::uart_send_string("A1 buffer:", buffer[1]); //A1
+        stm32::uart::uart_send_string("A4 buffer:", buffer[2]); //A4
+        stm32::uart::uart_send_string("A5 buffer:", buffer[3]); //A5
+        stm32::uart::uart_send_string("Pin 35", buffer[4]); //pin 35
 #endif
     }
 
