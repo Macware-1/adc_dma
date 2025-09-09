@@ -1,3 +1,9 @@
+/********************************************//*
+** File             adc.cpp
+** Date             09.09.2025    
+** Description      adc application functioins            
+**********************************************/
+
 #include "adc.h"
 #include "utils.h"
 #include "gpio.h"

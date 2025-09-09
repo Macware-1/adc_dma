@@ -1,3 +1,9 @@
+/********************************************//*
+** File             dma.h
+** Date             09.09.2025    
+** Description      dma header file         
+**********************************************/
+
 #include "stm32f4g.h"
 
 namespace stm32{

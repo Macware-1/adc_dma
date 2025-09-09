@@ -1,3 +1,9 @@
+/********************************************//*
+** File             uart.cpp
+** Date             09.09.2025    
+** Description      uart helper functioins            
+**********************************************/
+
 #include "uart.h"
 #include "utils.h"
 #include "gpio.h"
@@ -33,32 +39,32 @@ void stm32::uart::uart_send_char(char c){
     while (!utils::is_bit_set(uart->ISR, 6U)); // TC
 }
 
-    void uint16_to_char_array(uint16_t number, char* buffer) {
+void uint16_to_char_array(uint16_t number, char* buffer) {
 
-        if (number == 0) {
-            buffer[0] = '0';
-            buffer[1] = '\0';
-            return;
-        }
-
-        char temp[6]; // max 5 digits for uint16_t + 1 for null
-        int i = 0;
-
-        // Extract digits in reverse
-        while (number > 0) {
-            uint16_t digit = number % 10;
-            temp[i++] = '0' + digit; // convert digit to ASCII
-            number /= 10;
-        }
-
-        // Reverse the digits into the final buffer
-        int j = 0;
-        while (i > 0) {
-            buffer[j++] = temp[--i];
-        }
-
-        buffer[j] = '\0'; // Null-terminate
+    if (number == 0) {
+        buffer[0] = '0';
+        buffer[1] = '\0';
+        return;
     }
+
+    char temp[6]; // max 5 digits for uint16_t + 1 for null
+    int i = 0;
+
+    // Extract digits in reverse
+    while (number > 0) {
+        uint16_t digit = number % 10;
+        temp[i++] = '0' + digit; // convert digit to ASCII
+        number /= 10;
+    }
+
+    // Reverse the digits into the final buffer
+    int j = 0;
+    while (i > 0) {
+        buffer[j++] = temp[--i];
+    }
+
+    buffer[j] = '\0'; // Null-terminate
+}
 
 void stm32::uart::uart_send_string(const char* s, uint16_t val) {
     while (*s) {
