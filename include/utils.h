@@ -1,3 +1,9 @@
+/********************************************//*
+** File             utils.h
+** Date             09.09.2025    
+** Description      helper functions         
+**********************************************/
+
 #include <stdint.h>
 
 namespace utils{

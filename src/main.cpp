@@ -1,3 +1,9 @@
+/************************************************//*
+** File             main.cpp
+** Date             09.09.2025    
+** Description      Main Application source file            
+**************************************************/
+
 #include "stm32f4g.h"
 #include "rcc.h"
 #include "gpio.h"
@@ -8,6 +14,7 @@
 
 volatile uint16_t buffer[stm32::ADC::NO_OF_ADC_CONVERSIONS]={0U};
 
+/*gives approx delay of 380 ns each iteration considering 16Mhz clock*/
 void delay(int time){
     for (volatile int i = 0; i < time; ++i){
         __asm__ volatile ("nop"); //to remove loop unrolling and branch prediction optimisation
@@ -66,14 +73,12 @@ extern "C" int main()
         utils::set_bit(gpioa->BSRR, 5U + 16U);
         delay(1000000);
 #else
-        delay(1000000);
-        //uint16_t val = stm32::ADC::get_adc_val();
-        //stm32::uart::uart_send_string("val:", val);
         stm32::uart::uart_send_string("A0 buffer:", buffer[0]); //A0
         stm32::uart::uart_send_string("A1 buffer:", buffer[1]); //A1
         stm32::uart::uart_send_string("A4 buffer:", buffer[2]); //A4
         stm32::uart::uart_send_string("A5 buffer:", buffer[3]); //A5
         stm32::uart::uart_send_string("Pin 35", buffer[4]); //pin 35
+        delay(1000000);
 #endif
     }
 
