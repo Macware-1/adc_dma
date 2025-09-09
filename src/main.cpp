@@ -75,9 +75,9 @@ extern "C" int main()
 #else
         stm32::uart::uart_send_string("A0 buffer:", buffer[0]); //A0
         stm32::uart::uart_send_string("A1 buffer:", buffer[1]); //A1
-        stm32::uart::uart_send_string("A4 buffer:", buffer[2]); //A4
-        stm32::uart::uart_send_string("A5 buffer:", buffer[3]); //A5
-        stm32::uart::uart_send_string("Pin 35", buffer[4]); //pin 35
+        stm32::uart::uart_send_string("A4 buffer:", buffer[3]); //A4
+        stm32::uart::uart_send_string("A5 buffer:", buffer[2]); //A5
+        stm32::uart::uart_send_string("Pin 35   :", buffer[4]); //pin 35
         delay(1000000);
 #endif
     }
